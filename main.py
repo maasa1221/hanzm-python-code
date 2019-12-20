@@ -15,6 +15,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import roc_auc_score
 
 df0=pd.read_csv("data/new/fujitaRP1.csv",index_col=1)
 df2=pd.read_csv("data/new/koyamaRP1.csv",index_col=1)
@@ -55,7 +56,6 @@ df36_c=pd.read_csv("data/19025608.csv",index_col=1)
 df37_c=pd.read_csv("data/19633531.csv",index_col=1)
 df38_c=pd.read_csv("data/19638894.csv",index_col=1)
 df39_c=pd.read_csv("data/88621754.csv",index_col=1)
-
 df40_c=pd.read_csv("data/86140331_c.csv",index_col=1)
 df41_c=pd.read_csv("data/19639054_c.csv",index_col=1)
 df42_c=pd.read_csv("data/19629494_c.csv",index_col=1)
@@ -64,8 +64,6 @@ df44_c=pd.read_csv("data/17167931_c.csv",index_col=1)
 df45_c=pd.read_csv("data/16651981_c.csv",index_col=1)
 df46_c=pd.read_csv("data/16639522_c.csv",index_col=1)
 df47_c=pd.read_csv("data/15620160_c.csv",index_col=1)
-
-
 df48=pd.read_csv("data/74123588.csv",index_col=1)
 df49=pd.read_csv("data/73043426.csv",index_col=1)
 df50=pd.read_csv("data/19653527.csv",index_col=1)
@@ -76,8 +74,6 @@ df54=pd.read_csv("data/19630892.csv",index_col=1)
 df55=pd.read_csv("data/19140706.csv",index_col=1)
 df56=pd.read_csv("data/18693077.csv",index_col=1)
 df57=pd.read_csv("data/18642391.csv",index_col=1)
-
-
 df58_c=pd.read_csv("data/18684050_c.csv",index_col=1)
 df59_c=pd.read_csv("data/19627664_c.csv",index_col=1)
 df60_c=pd.read_csv("data/19639606_c.csv",index_col=1)
@@ -88,8 +84,6 @@ df64_c=pd.read_csv("data/19662018_c.csv",index_col=1)
 df65_c=pd.read_csv("data/19680864_c.csv",index_col=1)
 df66_c=pd.read_csv("data/86141143_c.csv",index_col=1)
 df67_c=pd.read_csv("data/87175907_c.csv",index_col=1)
-
-
 df68=pd.read_csv("data/15012763.csv",index_col=1)
 df69=pd.read_csv("data/16605773.csv",index_col=1)
 df70=pd.read_csv("data/19632168.csv",index_col=1)
@@ -128,18 +122,11 @@ for z in range(66):
         y = array.iloc[:,number_tree] 
         for i in range(len(y)-250,len(y),20):#512の範囲を1ストライド
             y1=y.iloc[i-128:i]#入力データの128フェーズへの切り出し
-
             y1=np.array(y1)#　np.ndarray化
             data_regista=np.zeros((nnn,a))
-
-
-
             yf = fft(y1)/(N/2)#離散フーリエ変換&規格化<-
-      
             data_regista=yf[1:65] #5次元分レジスタに格納
-
             #data_regista=scipy.stats.zscore(data_regista)#<=======================
-
             #print(data_regista)
             data_regista2=data_regista.reshape(a*nnn)#次元変形
             data_contena.append(data_regista2)#コンテナに追加
@@ -155,11 +142,9 @@ for z in range(66):
     first_vec=[]
     second=[]
     first_tree_num=0
-
     fig=plt.figure(figsize=(20,20))
     final_contena=[]
     final_data_contena=[]
-   
     for j in range(z,z+1):
         n=1
         nnn=1
@@ -167,7 +152,6 @@ for z in range(66):
         N = 128 # data number
         dt = 1/60 # data step [s]
         train_data_contena=[]
-        
         train_box=[]
         train_target_contena=[]
         target_box=[]
@@ -191,58 +175,25 @@ for z in range(66):
         train_data_contena2= mm.fit_transform(train_data_contena)
         final_contena.append(np.array(train_data_contena2))
         final_data_contena.append(np.array(train_target_contena))
-        
-   
     final_contena=np.array(final_contena).reshape(923,64*1)
-    clf = RandomForestClassifier(max_depth=7)#<-------------------------------------------------------------------------------------------------------------------------
+    clf = RandomForestClassifier()#<-------------------------------------------------------------------------------------------------------------------------
     pca = PCA(n_components=3)  
     X=pca.fit_transform(final_contena)
     clf2=clf.fit(final_contena,  train_target_contena)
     print(X.shape)
-    
-    
-    
-    
-    from sklearn import tree
-    import pydotplus as pdp
-    import pandas as pd
-    import numpy as np
-    estimators =clf2.estimators_
-    file_name = "./tree_visualization10.png"
-    dot_data = tree.export_graphviz(estimators[0], # 決定木オブジェクトを一つ指定する
-                                    out_file=None, # ファイルは介さずにGraphvizにdot言語データを渡すのでNone
-                                        filled=True, # Trueにすると、分岐の際にどちらのノードに多く分類されたのか色で示してくれる
-                                        rounded=True, # Trueにすると、ノードの角を丸く描画する。
-                                         # これを指定しないとチャート上で特徴量の名前が表示されない
-                                         # これを指定しないとチャート上で分類名が表示されない
-                                        special_characters=True # 特殊文字を扱えるようにする
-                                        )
-    graph = pdp.graph_from_dot_data(dot_data)
-    graph.write_png(file_name)
     stratifiedkfold = StratifiedKFold(n_splits=6)
     pred_score=cross_val_score(clf, final_contena, train_target_contena,cv=stratifiedkfold)#各スコア¥
     pred_score=pred_score.mean()
     pred_vec=cross_val_predict(clf, final_contena, train_target_contena,cv=stratifiedkfold)#各各の判断結果配列
     first_vec=pred_vec
-
-       
     print( pred_score)
-    
 first=confusion_matrix(train_target_contena, pred_vec)
-    
-
-from sklearn.metrics import roc_auc_score
-
-
 f_Recall+=first[0][0]/(first[0][0]+first[0][1])
 f_Specificity+=first[1][1]/(first[1][0]+first[1][1])
 f_AUC+=roc_auc_score(train_target_contena, first_vec)
 f_Accuracy+=(first[1][1]+first[0][0])/(first[0][0]+first[0][1]+first[1][0]+first[1][1])
-
-    
 print(f_Recall)
 print(f_Specificity)
 print(f_AUC)
 print(f_Accuracy)
-
 print(first)
