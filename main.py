@@ -32,7 +32,7 @@ df12_c=pd.read_csv("data/new/82304270RP1.csv",index_col=1)
 df13_c=pd.read_csv("data/new/15662472RP1.csv",index_col=1)
 df14_c=pd.read_csv("data/new/19600594RP1.csv",index_col=1)
 df15_c=pd.read_csv("data/new/73209319RP1.csv",index_col=1)
-df16_c=pd.read_csv("data/new/18611860R_0.csv",index_col=1)
+df16_c=pd.read_csv("data/new/18611860R_0.csv",index_col=1) # ここ以降手首の角度あります。
 df17_c=pd.read_csv("data/new/19619780R_0.csv",index_col=1)
 df18_c=pd.read_csv("data/new/19636280R0.csv",index_col=1)
 df19_c=pd.read_csv("data/new/19639492R_0.csv",index_col=1)
